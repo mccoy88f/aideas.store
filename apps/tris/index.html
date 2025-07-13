@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gioco del Tris disegnato a mano come sui fogli di scuola - nostalgico e divertente!">
+    <meta name="keywords" content="tris, tic tac toe, gioco, scuola, disegno, matita, foglio, nostalgico">
+    <meta name="author" content="Tris su Foglio">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#F5F5DC">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Tris su Foglio - Come a Scuola">
+    <meta property="og:description" content="Un nostalgico gioco del tris disegnato a mano su foglio di quaderno!">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://via.placeholder.com/800x600/F5F5DC/2F2F2F?text=Tris+su+Foglio">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tris su Foglio - Come a Scuola">
+    <meta name="twitter:description" content="Un nostalgico gioco del tris disegnato a mano su foglio di quaderno!">
+    <meta name="twitter:image" content="https://via.placeholder.com/800x600/F5F5DC/2F2F2F?text=Tris+su+Foglio">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1940/1940611.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1940/1940611.png">
+    
+    <title>Tris su Foglio - Come a Scuola!</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Caveat:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Kalam', cursive;
+            background: #F5F5DC;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 24px,
+                    rgba(0, 150, 255, 0.1) 25px,
+                    rgba(0, 150, 255, 0.1) 26px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 24px,
+                    rgba(255, 182, 193, 0.1) 25px,
+                    rgba(255, 182, 193, 0.1) 26px
+                );
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Effetto carta macchiata */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.02) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.02) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(139, 69, 19, 0.01) 1px, transparent 1px);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .paper-sheet {
+            background: #FFFEF7;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            margin: 20px;
+            box-shadow: 
+                0 0 0 1px rgba(0,0,0,0.1),
+                0 4px 8px rgba(0,0,0,0.1),
+                inset 0 0 50px rgba(0,0,0,0.02);
+            position: relative;
+            transform: rotate(-0.5deg);
+            animation: paperFloat 6s ease-in-out infinite;
+        }
+        
+        @keyframes paperFloat {
+            0%, 100% { transform: rotate(-0.5deg) translateY(0px); }
+            50% { transform: rotate(0.3deg) translateY(-2px); }
+        }
+        
+        /* Fori del foglio */
+        .paper-sheet::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 50px;
+            height: calc(100% - 100px);
+            width: 8px;
+            background: 
+                radial-gradient(circle, #E0E0E0 2px, transparent 2px),
+                radial-gradient(circle, #E0E0E0 2px, transparent 2px),
+                radial-gradient(circle, #E0E0E0 2px, transparent 2px);
+            background-size: 8px 40px;
+            background-position: 0 0, 0 20px, 0 40px;
+            background-repeat: repeat-y;
+        }
+        
+        h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 3rem;
+            color: #2F2F2F;
+            text-align: center;
+            margin-bottom: 30px;
+            transform: rotate(-1deg);
+            position: relative;
+            font-weight: 700;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #4169E1;
+            border-radius: 50%;
+            opacity: 0.3;
+            transform: rotate(0.5deg);
+        }
+        
+        .game-info {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: #2F2F2F;
+            font-weight: 400;
+            transform: rotate(0.2deg);
+        }
+        
+        .current-player {
+            display: inline-block;
+            padding: 8px 15px;
+            background: rgba(255, 255, 0, 0.2);
+            border: 2px dashed #DAA520;
+            border-radius: 15px;
+            margin: 10px 0;
+            font-weight: 500;
+            transform: rotate(-0.3deg);
+        }
+        
+        .game-board {
+            width: 320px;
+            height: 320px;
+            margin: 30px auto;
+            position: relative;
+            background: transparent;
+        }
+        
+        /* Griglia SVG disegnata a mano */
+        .grid-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .cell {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cell:nth-child(2) { top: 10px; left: 10px; }
+        .cell:nth-child(3) { top: 10px; left: 110px; }
+        .cell:nth-child(4) { top: 10px; left: 210px; }
+        .cell:nth-child(5) { top: 110px; left: 10px; }
+        .cell:nth-child(6) { top: 110px; left: 110px; }
+        .cell:nth-child(7) { top: 110px; left: 210px; }
+        .cell:nth-child(8) { top: 210px; left: 10px; }
+        .cell:nth-child(9) { top: 210px; left: 110px; }
+        .cell:nth-child(10) { top: 210px; left: 210px; }
+        
+        .cell:hover {
+            background: rgba(255, 255, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        .symbol-svg {
+            width: 80px;
+            height: 80px;
+            opacity: 0;
+            animation: drawSymbol 0.8s ease-out forwards;
+        }
+        
+        @keyframes drawSymbol {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: #FFFEF7;
+            color: #2F2F2F;
+            border: 2px solid #2F2F2F;
+            padding: 12px 25px;
+            font-family: 'Kalam', cursive;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px 10px 0;
+            transition: all 0.2s ease;
+            position: relative;
+            transform: rotate(-0.5deg);
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: rotate(0deg) translateY(-2px);
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: rotate(0deg) translateY(0px);
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+        
+        .winner-announcement {
+            font-family: 'Caveat', cursive;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            animation: celebration 1s ease-in-out;
+            transform: rotate(-0.8deg);
+        }
+        
+        .winner-announcement.winner {
+            color: #DC143C;
+            background: rgba(255, 255, 0, 0.3);
+            border: 3px dashed #DAA520;
+            border-radius: 20px;
+        }
+        
+        .winner-announcement.draw {
+            color: #4169E1;
+            background: rgba(173, 216, 230, 0.3);
+            border: 3px dashed #4169E1;
+            border-radius: 20px;
+        }
+        
+        @keyframes celebration {
+            0% { 
+                transform: rotate(-0.8deg) scale(0.5); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: rotate(0.5deg) scale(1.1); 
+            }
+            100% { 
+                transform: rotate(-0.8deg) scale(1); 
+                opacity: 1; 
+            }
+        }
+        
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            border: 2px dashed #2F2F2F;
+            border-radius: 10px;
+            transform: rotate(0.3deg);
+        }
+        
+        .score {
+            text-align: center;
+            font-weight: 500;
+            color: #2F2F2F;
+        }
+        
+        .score-label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Caveat', cursive;
+        }
+        
+        /* Animazione per il disegno delle linee */
+        .draw-line {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawLine 0.6s ease-out forwards;
+        }
+        
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-board {
+                width: 260px;
+                height: 260px;
+            }
+            
+            .cell {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .cell:nth-child(2) { top: 10px; left: 10px; }
+            .cell:nth-child(3) { top: 10px; left: 90px; }
+            .cell:nth-child(4) { top: 10px; left: 170px; }
+            .cell:nth-child(5) { top: 90px; left: 10px; }
+            .cell:nth-child(6) { top: 90px; left: 90px; }
+            .cell:nth-child(7) { top: 90px; left: 170px; }
+            .cell:nth-child(8) { top: 170px; left: 10px; }
+            .cell:nth-child(9) { top: 170px; left: 90px; }
+            .cell:nth-child(10) { top: 170px; left: 170px; }
+            
+            .symbol-svg {
+                width: 60px;
+                height: 60px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .paper-sheet {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="paper-sheet">
+        <h1>Tris su Foglio</h1>
+        
+        <div class="score-board">
+            <div class="score">
+                <div class="score-label">Croce vince</div>
+                <div class="score-value" id="scoreX">0</div>
+            </div>
+            <div class="score">
+                <div class="score-label">Pareggi</div>
+                <div class="score-value" id="scoreDraw">0</div>
+            </div>
+            <div class="score">
+                <div class="score-label">Cerchio vince</div>
+                <div class="score-value" id="scoreO">0</div>
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <div class="current-player" id="currentPlayer">
+                È il turno di: Croce
+            </div>
+        </div>
+        
+        <div class="game-board" id="gameBoard">
+            <!-- Griglia disegnata a mano con SVG -->
+            <svg class="grid-svg" viewBox="0 0 320 320">
+                <!-- Linee verticali -->
+                <line x1="107" y1="10" x2="107" y2="310" 
+                      stroke="#2F2F2F" stroke-width="3" opacity="0.9"/>
+                <line x1="213" y1="10" x2="213" y2="310" 
+                      stroke="#2F2F2F" stroke-width="3" opacity="0.9"/>
+                <!-- Linee orizzontali -->
+                <line x1="10" y1="107" x2="310" y2="107" 
+                      stroke="#2F2F2F" stroke-width="3" opacity="0.9"/>
+                <line x1="10" y1="213" x2="310" y2="213" 
+                      stroke="#2F2F2F" stroke-width="3" opacity="0.9"/>
+            </svg>
+            
+            <button class="cell" data-index="0"></button>
+            <button class="cell" data-index="1"></button>
+            <button class="cell" data-index="2"></button>
+            <button class="cell" data-index="3"></button>
+            <button class="cell" data-index="4"></button>
+            <button class="cell" data-index="5"></button>
+            <button class="cell" data-index="6"></button>
+            <button class="cell" data-index="7"></button>
+            <button class="cell" data-index="8"></button>
+        </div>
+        
+        <div id="gameResult"></div>
+        
+        <div class="buttons">
+            <button class="btn" onclick="resetGame()">🔄 Nuova Partita</button>
+            <button class="btn" onclick="resetScore()">🏆 Azzera Punteggio</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+        let scores = { X: 0, O: 0, draw: 0 };
+
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // righe
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // colonne
+            [0, 4, 8], [2, 4, 6] // diagonali
+        ];
+
+        const cells = document.querySelectorAll('.cell');
+        const currentPlayerDisplay = document.getElementById('currentPlayer');
+        const gameResult = document.getElementById('gameResult');
+
+        // Funzioni per creare simboli SVG disegnati a mano
+        function createXSymbol() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'symbol-svg');
+            svg.setAttribute('viewBox', '0 0 80 80');
+            
+            // Prima linea della X (diagonale \)
+            const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            line1.setAttribute('d', 'M 15 12 Q 25 25 35 38 Q 45 51 55 65 Q 62 72 68 78');
+            line1.setAttribute('stroke', '#DC143C');
+            line1.setAttribute('stroke-width', '3');
+            line1.setAttribute('stroke-linecap', 'round');
+            line1.setAttribute('fill', 'none');
+            line1.setAttribute('class', 'draw-line');
+            
+            // Seconda linea della X (diagonale /)
+            const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            line2.setAttribute('d', 'M 68 15 Q 58 25 48 35 Q 38 45 28 55 Q 22 62 15 72');
+            line2.setAttribute('stroke', '#DC143C');
+            line2.setAttribute('stroke-width', '3');
+            line2.setAttribute('stroke-linecap', 'round');
+            line2.setAttribute('fill', 'none');
+            line2.setAttribute('class', 'draw-line');
+            line2.style.animationDelay = '0.3s';
+            
+            svg.appendChild(line1);
+            svg.appendChild(line2);
+            return svg;
+        }
+
+        function createOSymbol() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'symbol-svg');
+            svg.setAttribute('viewBox', '0 0 80 80');
+            
+            // Cerchio irregolare disegnato a mano
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            circle.setAttribute('d', 'M 40 15 Q 55 18 62 28 Q 68 40 65 52 Q 62 65 50 68 Q 38 72 28 65 Q 18 58 15 45 Q 12 32 18 25 Q 25 15 40 15');
+            circle.setAttribute('stroke', '#4169E1');
+            circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('stroke-linecap', 'round');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('class', 'draw-line');
+            
+            svg.appendChild(circle);
+            return svg;
+        }
+
+        // Inizializza il gioco
+        function initializeGame() {
+            cells.forEach((cell, index) => {
+                cell.addEventListener('click', () => handleCellClick(index));
+            });
+            updateScoreDisplay();
+        }
+
+        // Gestisce il click su una cella
+        function handleCellClick(index) {
+            if (gameBoard[index] !== '' || !gameActive) {
+                return;
+            }
+
+            gameBoard[index] = currentPlayer;
+            const cell = cells[index];
+            
+            // Crea e aggiunge il simbolo SVG disegnato a mano
+            let symbol;
+            if (currentPlayer === 'X') {
+                symbol = createXSymbol();
+            } else {
+                symbol = createOSymbol();
+            }
+            
+            cell.appendChild(symbol);
+            
+            // Controlla se c'è un vincitore
+            if (checkWinner()) {
+                gameActive = false;
+                announceWinner(currentPlayer);
+                scores[currentPlayer]++;
+            } else if (gameBoard.every(cell => cell !== '')) {
+                gameActive = false;
+                announceDraw();
+                scores.draw++;
+            } else {
+                // Cambia giocatore
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                updateCurrentPlayerDisplay();
+            }
+            
+            updateScoreDisplay();
+        }
+
+        // Controlla se c'è un vincitore
+        function checkWinner() {
+            return winningConditions.some(condition => {
+                const [a, b, c] = condition;
+                return gameBoard[a] && 
+                       gameBoard[a] === gameBoard[b] && 
+                       gameBoard[a] === gameBoard[c];
+            });
+        }
+
+        // Annuncia il vincitore
+        function announceWinner(winner) {
+            gameResult.innerHTML = `
+                <div class="winner-announcement winner">
+                    🎉 Ha vinto ${winner}! 🎉
+                </div>
+            `;
+        }
+
+        // Annuncia il pareggio
+        function announceDraw() {
+            gameResult.innerHTML = `
+                <div class="winner-announcement draw">
+                    🤝 Pareggio! 🤝
+                </div>
+            `;
+        }
+
+        // Aggiorna il display del giocatore corrente
+        function updateCurrentPlayerDisplay() {
+            currentPlayerDisplay.textContent = `È il turno di: ${currentPlayer}`;
+        }
+
+        // Aggiorna il punteggio
+        function updateScoreDisplay() {
+            document.getElementById('scoreX').textContent = scores.X;
+            document.getElementById('scoreO').textContent = scores.O;
+            document.getElementById('scoreDraw').textContent = scores.draw;
+        }
+
+        // Reset del gioco
+        function resetGame() {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            currentPlayer = 'X';
+            
+            cells.forEach(cell => {
+                // Rimuove tutti i simboli SVG
+                const symbols = cell.querySelectorAll('.symbol-svg');
+                symbols.forEach(symbol => symbol.remove());
+            });
+            
+            gameResult.innerHTML = '';
+            updateCurrentPlayerDisplay();
+        }
+
+        // Reset del punteggio
+        function resetScore() {
+            scores = { X: 0, O: 0, draw: 0 };
+            updateScoreDisplay();
+            resetGame();
+        }
+
+        // Inizializza il gioco al caricamento della pagina
+        initializeGame();
+    </script>
+</body>
+</html>
