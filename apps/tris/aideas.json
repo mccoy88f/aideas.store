@@ -1,0 +1,19 @@
+{
+  "name": "Tris",
+  "description": "Il gioco del tris con una grafica old stile carta e penna",
+  "author": "AIdeas Team",
+  "version": "1.0.0",
+  "category": "utility",
+  "tags": ["games", "tris"],
+  "icon": "❌",
+  "githubUrl": "https://github.com/aideas.store/apps/tris",
+  "permissions": ["local-storage"],
+  "metadata": {
+    "minAideasVersion": "1.0.0",
+    "features": ["divertimento", "strategia", "giochi"],
+    "screenshots": [
+      "https://example.com/screenshot1.png",
+      "https://example.com/screenshot2.png"
+    ]
+  }
+} 
