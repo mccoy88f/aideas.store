@@ -2,13 +2,14 @@ name: Process Approved Apps
 
 on:
   issues:
-    types: [labeled, closed]
+    types: [closed]
 
 jobs:
   process-approved-app:
     if: |
-      (github.event.action == 'labeled' && contains(github.event.label.name, 'approved')) ||
-      (github.event.action == 'closed' && contains(github.event.issue.labels.*.name, 'approved'))
+      github.event.action == 'closed' &&
+      contains(github.event.issue.labels.*.name, 'approved') &&
+      contains(github.event.issue.title, '[SUBMISSION]')
     runs-on: ubuntu-latest
     
     steps:
@@ -223,3 +224,4 @@ jobs:
         run: |
           echo "✅ App '${{ steps.extract.outputs.app_name }}' (ID: ${{ steps.extract.outputs.app_id }}) has been successfully added to the store!"
           echo "Repository updated with new app files and catalog."
+          echo "Workflow triggered by closing issue with 'approved' label and '[SUBMISSION]' tag."
