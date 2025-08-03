@@ -1,0 +1,32 @@
+{
+  "name": "Forza 4",
+  "title": "Forza 4",
+  "description": "Forza 4 - Gioco di velocità superando ostacoli con animazioni e colori vibranti",
+  "author": "AIDeas.run",
+  "version": "1.0.0",
+  "category": "uncategorized",
+  "tags": [
+    "Forza",
+    "Gioco",
+    "Velocità",
+    "Challenge",
+    "Speed"
+  ],
+  "icon": "✨",
+  "githubUrl": null,
+  "permissions": [],
+  "metadata": {
+    "source": "manual",
+    "uniqueId": "forza4.aideasrun",
+    "securityReport": {
+      "overall": "safe",
+      "score": 100,
+      "issues": [],
+      "recommendations": [
+        "App appears to be safe for installation"
+      ]
+    },
+    "submittedAt": "2025-08-03T09:03:18.583Z",
+    "submittedBy": "mccoy88f"
+  }
+}
