@@ -42,41 +42,41 @@ jobs:
             echo "Updating catalog.json..."
             
             # Crea script Node.js per aggiornare il catalog
-            cat > update-catalog.js << 'EOF'
-            const fs = require('fs');
-            const deletedDirs = process.env.DELETED_DIRS.split(' ').filter(dir => dir.trim());
-            
-            console.log('Removing apps:', deletedDirs);
-            
-            if (fs.existsSync('catalog.json')) {
-              const catalog = JSON.parse(fs.readFileSync('catalog.json', 'utf8'));
-              
-              # Rimuovi le app cancellate
-              const originalCount = catalog.apps.length;
-              catalog.apps = catalog.apps.filter(app => {
-                const shouldKeep = !deletedDirs.includes(app.id);
-                if (!shouldKeep) {
-                  console.log(`Removing app: ${app.name} (ID: ${app.id})`);
-                }
-                return shouldKeep;
-              });
-              
-              const removedCount = originalCount - catalog.apps.length;
-              catalog.lastUpdated = new Date().toISOString();
-              
-              fs.writeFileSync('catalog.json', JSON.stringify(catalog, null, 2));
-              
-              console.log(`Removed ${removedCount} apps from catalog`);
-              console.log(`Catalog now contains ${catalog.apps.length} apps`);
-            } else {
-              console.log('No catalog.json found, creating empty one');
-              const emptyCatalog = {
-                apps: [],
-                lastUpdated: new Date().toISOString()
-              };
-              fs.writeFileSync('catalog.json', JSON.stringify(emptyCatalog, null, 2));
-            }
-            EOF
+            cat > update-catalog.js << 'SCRIPT_EOF'
+const fs = require('fs');
+const deletedDirs = process.env.DELETED_DIRS.split(' ').filter(dir => dir.trim());
+
+console.log('Removing apps:', deletedDirs);
+
+if (fs.existsSync('catalog.json')) {
+  const catalog = JSON.parse(fs.readFileSync('catalog.json', 'utf8'));
+  
+  // Rimuovi le app cancellate
+  const originalCount = catalog.apps.length;
+  catalog.apps = catalog.apps.filter(app => {
+    const shouldKeep = !deletedDirs.includes(app.id);
+    if (!shouldKeep) {
+      console.log(`Removing app: ${app.name} (ID: ${app.id})`);
+    }
+    return shouldKeep;
+  });
+  
+  const removedCount = originalCount - catalog.apps.length;
+  catalog.lastUpdated = new Date().toISOString();
+  
+  fs.writeFileSync('catalog.json', JSON.stringify(catalog, null, 2));
+  
+  console.log(`Removed ${removedCount} apps from catalog`);
+  console.log(`Catalog now contains ${catalog.apps.length} apps`);
+} else {
+  console.log('No catalog.json found, creating empty one');
+  const emptyCatalog = {
+    apps: [],
+    lastUpdated: new Date().toISOString()
+  };
+  fs.writeFileSync('catalog.json', JSON.stringify(emptyCatalog, null, 2));
+}
+SCRIPT_EOF
             
             # Esegui lo script
             DELETED_DIRS="${{ steps.deleted-dirs.outputs.deleted_dirs }}" node update-catalog.js
