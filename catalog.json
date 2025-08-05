@@ -1,0 +1,23 @@
+{
+  "apps": [
+    {
+      "id": "forza-4.unknown",
+      "name": "Forza 4",
+      "description": "App submitted via AIdeas Store",
+      "author": "Unknown",
+      "version": "1.0.0",
+      "category": "utility",
+      "tags": [],
+      "icon": "📱",
+      "githubUrl": "https://github.com/mccoy88f/aideas.store/tree/main/apps/forza-4.unknown",
+      "downloadUrl": "https://github.com/mccoy88f/aideas.store/archive/refs/heads/main.zip",
+      "installDate": "2025-08-05T08:30:35.822Z",
+      "lastUsed": null,
+      "favorite": false,
+      "type": "store",
+      "storeId": "forza-4.unknown",
+      "lastModified": "2025-08-05T08:30:35.822Z"
+    }
+  ],
+  "lastUpdated": "2025-08-05T08:30:35.822Z"
+}
