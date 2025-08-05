@@ -4,6 +4,10 @@ on:
   issues:
     types: [closed]
 
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   process-approved-app:
     if: |
@@ -106,6 +110,10 @@ jobs:
           unzip -j temp.zip -d "apps/${{ steps.extract.outputs.app_id }}/"
           rm temp.zip
           
+          # Remove macOS hidden files
+          find "apps/${{ steps.extract.outputs.app_id }}/" -name "._*" -delete
+          find "apps/${{ steps.extract.outputs.app_id }}/" -name ".DS_Store" -delete
+          
           echo "Files extracted:"
           ls -la "apps/${{ steps.extract.outputs.app_id }}/"
       
@@ -196,11 +204,24 @@ jobs:
       
       - name: Commit and push changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Add approved app: ${{ steps.extract.outputs.app_name }} (ID: ${{ steps.extract.outputs.app_id }})"
-          git push
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add all files except hidden ones
+          git add apps/${{ steps.extract.outputs.app_id }}/
+          git add catalog.json
+          
+          # Commit with detailed message
+          git commit -m "feat: add approved app '${{ steps.extract.outputs.app_name }}' (ID: ${{ steps.extract.outputs.app_id }})
+          
+          - App: ${{ steps.extract.outputs.app_name }}
+          - Author: ${{ steps.extract.outputs.author }}
+          - Category: ${{ steps.extract.outputs.category }}
+          - Tags: ${{ steps.extract.outputs.tags }}
+          - Auto-approved via workflow"
+          
+          # Push to main branch
+          git push origin main
       
       - name: Comment on issue
         uses: peter-evans/create-or-update-comment@v3
