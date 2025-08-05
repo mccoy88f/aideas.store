@@ -1,0 +1,32 @@
+{
+  "name": "Forza 4",
+  "title": "Forza 4",
+  "description": "Forza 4 - Gioco di velocità superando ostacoli con animazioni e colori vibranti",
+  "author": "mccoy88f",
+  "version": "1.0.0",
+  "category": "games",
+  "tags": [
+    "Forza",
+    "Gioco",
+    "Velocità",
+    "Challenge",
+    "Speed"
+  ],
+  "icon": "https://cdn.jsdelivr.net/npm/@iconify-icons/svg/racing-flag.svg",
+  "githubUrl": null,
+  "permissions": [],
+  "metadata": {
+    "source": "manual",
+    "uniqueId": "forza4.aideasrun",
+    "securityReport": {
+      "overall": "safe",
+      "score": 100,
+      "issues": [],
+      "recommendations": [
+        "App appears to be safe for installation"
+      ]
+    },
+    "submittedAt": "2025-08-05T09:05:11.459Z",
+    "submittedBy": "mccoy88f"
+  }
+}
