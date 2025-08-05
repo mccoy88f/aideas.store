@@ -45,15 +45,15 @@ jobs:
             ZIP_URL=$(grep -o 'https://[^[:space:]]*\.zip' /tmp/issue_body.txt | head -1)
           fi
           
-          APP_NAME=$(echo "${{ github.event.issue.title }}" | sed 's/\[SUBMISSION\] //' | sed 's/\[SUBMISSION\]//')
+          APP_NAME=$(echo "${{ github.event.issue.title }}" | sed 's/\[SUBMISSION\] //' | sed 's/\[SUBMISSION\]//' | sed 's/\[UPDATE\] //' | sed 's/ v[0-9]\+\.[0-9]\+\.[0-9]\+//')
           
           DESCRIPTION=$(grep -A1 "**Description:**" /tmp/issue_body.txt | tail -1 | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' || echo "App submitted via AIdeas Store")
-          AUTHOR=$(grep -A1 "**Author:**" /tmp/issue_body.txt | tail -1 | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' || echo "Unknown")
+          AUTHOR=$(grep -A1 "**Author:**" /tmp/issue_body.txt | tail -1 | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' || echo "${{ github.event.issue.user.login }}")
           CATEGORY=$(grep -A1 "**Category:**" /tmp/issue_body.txt | tail -1 | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' || echo "utility")
           TAGS=$(grep -A1 "**Tags:**" /tmp/issue_body.txt | tail -1 | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' || echo "")
           
           [ -z "$DESCRIPTION" ] && DESCRIPTION="App submitted via AIdeas Store"
-          [ -z "$AUTHOR" ] && AUTHOR="Unknown"
+          [ -z "$AUTHOR" ] && AUTHOR="${{ github.event.issue.user.login }}"
           [ -z "$CATEGORY" ] && CATEGORY="utility"
           [ -z "$TAGS" ] && TAGS=""
           
@@ -62,6 +62,12 @@ jobs:
           AUTHOR_SANITIZED=$(echo "$AUTHOR" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g')
           APP_ID="${APP_ID_BASE}.${AUTHOR_SANITIZED}"
           
+          # Check if this is an update
+          IS_UPDATE=false
+          if echo "${{ github.event.issue.title }}" | grep -q "\[UPDATE\]"; then
+            IS_UPDATE=true
+          fi
+          
           echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
           echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
           echo "zip_url=$ZIP_URL" >> $GITHUB_OUTPUT
@@ -69,6 +75,7 @@ jobs:
           echo "author=$AUTHOR" >> $GITHUB_OUTPUT
           echo "category=$CATEGORY" >> $GITHUB_OUTPUT
           echo "tags=$TAGS" >> $GITHUB_OUTPUT
+          echo "is_update=$IS_UPDATE" >> $GITHUB_OUTPUT
           
           echo "Extracted info:"
           echo "App Name: $APP_NAME"
@@ -78,6 +85,7 @@ jobs:
           echo "Author: $AUTHOR"
           echo "Category: $CATEGORY"
           echo "Tags: $TAGS"
+          echo "Is Update: $IS_UPDATE"
           
           if [ -z "$ZIP_URL" ]; then
             echo "Error: No ZIP URL found in issue body"
@@ -111,7 +119,7 @@ jobs:
           fi
           
           mkdir -p "apps/${{ steps.extract.outputs.app_id }}"
-          unzip -j temp.zip -d "apps/${{ steps.extract.outputs.app_id }}/"
+          unzip -o -j temp.zip -d "apps/${{ steps.extract.outputs.app_id }}/"
           rm temp.zip
           
           # Remove macOS hidden files
