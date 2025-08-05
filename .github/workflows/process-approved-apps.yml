@@ -46,7 +46,6 @@ jobs:
           fi
           
           APP_NAME=$(echo "${{ github.event.issue.title }}" | sed 's/\[SUBMISSION\] //' | sed 's/\[SUBMISSION\]//')
-          APP_ID=$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g')
           
           DESCRIPTION=$(grep -A1 "**Description:**" /tmp/issue_body.txt | tail -1 | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' || echo "App submitted via AIdeas Store")
           AUTHOR=$(grep -A1 "**Author:**" /tmp/issue_body.txt | tail -1 | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//' || echo "Unknown")
@@ -57,6 +56,11 @@ jobs:
           [ -z "$AUTHOR" ] && AUTHOR="Unknown"
           [ -z "$CATEGORY" ] && CATEGORY="utility"
           [ -z "$TAGS" ] && TAGS=""
+          
+          # Generate app ID: nome-app.autore
+          APP_ID_BASE=$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g')
+          AUTHOR_SANITIZED=$(echo "$AUTHOR" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g')
+          APP_ID="${APP_ID_BASE}.${AUTHOR_SANITIZED}"
           
           echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
           echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
@@ -207,11 +211,9 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Add all files except hidden ones
           git add apps/${{ steps.extract.outputs.app_id }}/
           git add catalog.json
           
-          # Commit with detailed message
           git commit -m "feat: add approved app '${{ steps.extract.outputs.app_name }}' (ID: ${{ steps.extract.outputs.app_id }})
           
           - App: ${{ steps.extract.outputs.app_name }}
@@ -220,7 +222,6 @@ jobs:
           - Tags: ${{ steps.extract.outputs.tags }}
           - Auto-approved via workflow"
           
-          # Push to main branch
           git push origin main
       
       - name: Comment on issue
@@ -238,11 +239,14 @@ jobs:
             L'app è stata aggiunta al repository AIdeas Store e sarà disponibile a breve.
             
             📍 **Percorso:** `apps/${{ steps.extract.outputs.app_id }}/`
+            📁 **Formato:** `nome-app.autore`
             
             Grazie per la submission!
       
       - name: Notify success
         run: |
           echo "✅ App '${{ steps.extract.outputs.app_name }}' (ID: ${{ steps.extract.outputs.app_id }}) has been successfully added to the store!"
+          echo "📁 App installed in: apps/${{ steps.extract.outputs.app_id }}/"
+          echo "📋 Format: nome-app.autore"
           echo "Repository updated with new app files and catalog."
           echo "Workflow triggered by closing issue with 'approved' label and '[SUBMISSION]' tag."
